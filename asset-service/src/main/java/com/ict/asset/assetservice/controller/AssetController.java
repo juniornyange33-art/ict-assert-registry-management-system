@@ -35,4 +35,31 @@ public class AssetController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Asset> updateAsset(@PathVariable Long id, @RequestBody Asset assetDetails) {
+        return assetRepository.findById(id)
+                .map(existingAsset -> {
+                    existingAsset.setName(assetDetails.getName());
+                    existingAsset.setSerialNumber(assetDetails.getSerialNumber());
+                    existingAsset.setCategory(assetDetails.getCategory());
+                    existingAsset.setBrand(assetDetails.getBrand());
+                    existingAsset.setStatus(assetDetails.getStatus());
+                    existingAsset.setPurchaseDate(assetDetails.getPurchaseDate());
+                    existingAsset.setCost(assetDetails.getCost());
+                    Asset updatedAsset = assetRepository.save(existingAsset);
+                    return ResponseEntity.ok(updatedAsset);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAsset(@PathVariable Long id) {
+        return assetRepository.findById(id)
+                .map(asset -> {
+                    assetRepository.delete(asset);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
